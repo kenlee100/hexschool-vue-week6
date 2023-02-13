@@ -1,12 +1,8 @@
 <template>
+  <!-- TODO: modal 功能待調整 -->
   <h1>商品列表</h1>
   <div class="text-end mt-4">
-    <button
-      class="btn btn-primary"
-      data-bs-target="#productModal"
-      data-bs-toggle="modal"
-      @click="openModal('new')"
-    >
+    <button class="btn btn-primary" @click="openModal('new')">
       建立新的產品
     </button>
   </div>
@@ -56,6 +52,12 @@
       </tr>
     </tbody>
   </table>
+  <AdminProductModal
+    ref="modal"
+    :temp-content="temp"
+    :open-modal="openModal"
+    :id="productId"
+  ></AdminProductModal>
   <Pagination
     :pages="pagination"
     @change-page="getProducts"
@@ -64,6 +66,7 @@
 </template>
 <script>
 const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+import AdminProductModal from "@/components/admin/AdminProductModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
@@ -75,16 +78,18 @@ export default {
       },
       pagination: {},
       isNew: false,
-      isLoading: false,
+      productId: "",
+      // isLoading: false,
     };
   },
   components: {
     Pagination,
+    AdminProductModal,
   },
   methods: {
     // 取得目前頁碼商品資料
     getProducts(num = 1) {
-      this.isLoading = true;
+      // this.isLoading = true;
       this.$http
         .get(`${VITE_APIURL}/api/${VITE_APIPATH}/admin/products/?page=${num}`)
         .then((res) => {
@@ -99,30 +104,32 @@ export default {
           alert(err.data.message);
         });
     },
-    // openModal(productMethod, item) {
-    //   if (productMethod === "new") {
-    //     this.isNew = true;
-    //     // productModalContainer.show();
-    //     this.temp = { imagesUrl: [] };
-    //   } else if (productMethod === "edit") {
-    //     this.isNew = false;
-    //     this.temp = JSON.parse(JSON.stringify(item));
-    //     // productModalContainer.show();
-    //   } else if (productMethod === "delete") {
-    //     this.temp = JSON.parse(JSON.stringify(item));
-    //     // delProductModalContainer.show();
-    //   }
-    // },
-    // closeModal(target) {
-    //   if (target === "#productModal") {
-    //     // productModalContainer.hide();
-    //   } else if (target === "#delProductModal") {
-    //     // delProductModalContainer.hide();
-    //   }
-    // },
+    openModal(productMethod, item) {
+      if (productMethod === "new") {
+        this.isNew = true;
+
+        // productModalContainer.show();
+        this.temp = { imagesUrl: [] };
+      } else if (productMethod === "edit") {
+        this.isNew = false;
+        this.temp = JSON.parse(JSON.stringify(item));
+        // productModalContainer.show();
+      } else if (productMethod === "delete") {
+        this.temp = JSON.parse(JSON.stringify(item));
+        // delProductModalContainer.show();
+      }
+    },
+    closeModal(target) {
+      if (target === "#productModal") {
+        // productModalContainer.hide();
+      } else if (target === "#delProductModal") {
+        // delProductModalContainer.hide();
+      }
+    },
   },
   mounted() {
     this.getProducts();
+    console.log(this.$refs.modal);
   },
 };
 </script>

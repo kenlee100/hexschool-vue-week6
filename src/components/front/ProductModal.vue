@@ -1,12 +1,5 @@
 <template>
-  <div
-    class="modal fade"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-    ref="modal"
-  >
+  <div class="modal fade" ref="modal">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content border-0">
         <div class="modal-header bg-dark text-white">
@@ -72,6 +65,7 @@
 </template>
 <script>
 const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+import * as bootstrap from "bootstrap";
 export default {
   data() {
     return {

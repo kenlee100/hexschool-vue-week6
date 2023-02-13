@@ -32,7 +32,7 @@
             <button
               type="button"
               class="btn btn-outline-danger"
-              @click.stop="addCart(item)"
+              @click="addCart(item)"
               :disabled="loadingStatus.loadingItem === item.id"
             >
               <i
@@ -46,12 +46,24 @@
       </div>
     </div>
   </div>
-  <ProductModal></ProductModal>
+  <ProductModal
+    ref="modal"
+    :temp-content="tempProduct"
+    :add-cart="addCart"
+    :id="productId"
+    :open-modal="openModal"
+  ></ProductModal>
+  <Pagination
+    :pages="pagination"
+    @change-page="getProducts"
+    :get-products="getProducts"
+  ></Pagination>
 </template>
 <script>
+const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
 import { RouterLink } from "vue-router";
 import ProductModal from "@/components/front/ProductModal.vue";
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
     return {
@@ -59,10 +71,21 @@ export default {
         loadingItem: "",
       },
       products: [],
+      pagination: {},
+      tempProduct: {
+        imagesUrl: [],
+      },
+      productId: "",
     };
   },
-  components: { RouterLink, ProductModal },
+  components: { RouterLink, ProductModal, Pagination },
   methods: {
+    openModal(id) {
+      // id為外層帶入 productId
+      // 將 id 帶入 讀取狀態
+      this.loadingStatus.loadingItem = id;
+      this.productId = id;
+    },
     // 加入購物車
     addCart(content, qty = 1) {
       // 賦予讀取狀態id
@@ -85,18 +108,18 @@ export default {
           } = res.data;
           alert(`${product.title} ${message}`);
           this.$refs.modal.closeModal();
-          this.getCartList();
         })
         .catch((err) => {
           alert(`${err.data.message}`);
         });
     },
-    getProducts() {
+    getProducts(num = 1) {
       this.$http
-        .get(`${VITE_APIURL}/api/${VITE_APIPATH}/products/all`)
+        .get(`${VITE_APIURL}/api/${VITE_APIPATH}/products?page=${num}`)
         .then((res) => {
           console.log(res.data);
           this.products = res.data.products;
+          this.pagination = res.data.pagination;
         })
         .catch((err) => {
           console.log(err);
@@ -118,6 +141,8 @@ export default {
   },
   mounted() {
     this.getProducts();
+
+    this.$refs.modal.openModal();
   },
 };
 </script>
