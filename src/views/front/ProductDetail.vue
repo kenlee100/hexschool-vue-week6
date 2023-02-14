@@ -46,7 +46,7 @@
   </div>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 export default {
   data() {
     return {
@@ -57,7 +57,7 @@ export default {
   methods: {
     getProductItem(id) {
       this.$http
-        .get(`${VITE_APIURL}/api/${VITE_APIPATH}/product/${id}`)
+        .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/product/${id}`)
         .then((res) => {
           console.log(res.data);
 
@@ -72,7 +72,7 @@ export default {
       // 賦予讀取狀態id
       // this.loadingStatus.loadingItem = content.id;
       this.$http
-        .post(`${VITE_APIURL}/api/${VITE_APIPATH}/cart`, {
+        .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`, {
           data: {
             product_id: content.id,
             qty,

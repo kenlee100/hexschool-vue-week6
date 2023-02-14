@@ -9,7 +9,7 @@
 <script>
 import { RouterView } from "vue-router";
 import Nav from "../components/admin/Nav.vue";
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 export default {
   methods: {},
   components: { RouterView, Nav },

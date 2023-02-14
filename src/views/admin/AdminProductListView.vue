@@ -32,8 +32,6 @@
             <button
               type="button"
               class="btn btn-outline-primary btn-sm"
-              data-bs-target="#productModal"
-              data-bs-toggle="modal"
               @click="openModal('edit', item)"
             >
               編輯
@@ -41,8 +39,6 @@
             <button
               type="button"
               class="btn btn-outline-danger btn-sm"
-              data-bs-target="#delProductModal"
-              data-bs-toggle="modal"
               @click="openModal('delete', item)"
             >
               刪除
@@ -53,11 +49,16 @@
     </tbody>
   </table>
   <AdminProductModal
-    ref="modal"
+    ref="productModal"
     :temp-content="temp"
-    :open-modal="openModal"
-    :id="productId"
+    :is-new="isNew"
+    @update-data="getProducts"
   ></AdminProductModal>
+  <AdminDeleteModal
+    ref="deleteProductModal"
+    :temp-content="temp"
+    @update-data="getProducts"
+  ></AdminDeleteModal>
   <Pagination
     :pages="pagination"
     @change-page="getProducts"
@@ -65,8 +66,9 @@
   ></Pagination>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
+import AdminDeleteModal from "@/components/admin/AdminDeleteModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
@@ -85,13 +87,16 @@ export default {
   components: {
     Pagination,
     AdminProductModal,
+    AdminDeleteModal,
   },
   methods: {
     // 取得目前頁碼商品資料
     getProducts(num = 1) {
       // this.isLoading = true;
       this.$http
-        .get(`${VITE_APIURL}/api/${VITE_APIPATH}/admin/products/?page=${num}`)
+        .get(
+          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/products/?page=${num}`
+        )
         .then((res) => {
           // console.log("res", res);
           this.products = res.data.products;
@@ -104,32 +109,33 @@ export default {
           alert(err.data.message);
         });
     },
-    openModal(productMethod, item) {
-      if (productMethod === "new") {
+    openModal(openMethod, item) {
+      if (openMethod === "new") {
         this.isNew = true;
+        this.$refs.productModal.openModal();
 
-        // productModalContainer.show();
         this.temp = { imagesUrl: [] };
-      } else if (productMethod === "edit") {
+      } else if (openMethod === "edit") {
         this.isNew = false;
         this.temp = JSON.parse(JSON.stringify(item));
-        // productModalContainer.show();
-      } else if (productMethod === "delete") {
+
+        this.$refs.productModal.openModal();
+      } else if (openMethod === "delete") {
         this.temp = JSON.parse(JSON.stringify(item));
-        // delProductModalContainer.show();
+        this.$refs.deleteProductModal.openModal();
       }
     },
-    closeModal(target) {
-      if (target === "#productModal") {
-        // productModalContainer.hide();
-      } else if (target === "#delProductModal") {
-        // delProductModalContainer.hide();
-      }
-    },
+    // closeModal(target) {
+    //   if (target === "#productModal") {
+    //     // productModalContainer.hide();
+    //   } else if (target === "#delProductModal") {
+    //     // delProductModalContainer.hide();
+    //   }
+    // },
   },
   mounted() {
     this.getProducts();
-    console.log(this.$refs.modal);
+    // console.log(this.$refs.productModal);
   },
 };
 </script>

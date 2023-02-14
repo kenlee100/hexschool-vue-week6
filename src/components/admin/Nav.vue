@@ -16,7 +16,7 @@
   </nav>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 export default {
   data() {
     return {
@@ -47,7 +47,7 @@ export default {
       if (token) {
         this.$http.defaults.headers.common.Authorization = token;
         this.$http
-          .post(`${VITE_APIURL}/api/user/check`)
+          .post(`${VITE_APP_APIURL}/api/user/check`)
           .then(() => {
             // console.log("check", res);
           })
@@ -65,7 +65,7 @@ export default {
     },
     logout() {
       this.$http
-        .post(`${VITE_APIURL}/logout/`)
+        .post(`${VITE_APP_APIURL}/logout/`)
         .then((res) => {
           alert(res.data.message);
           document.cookie = "userToken=;expires=;";

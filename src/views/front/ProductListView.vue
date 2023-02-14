@@ -20,7 +20,7 @@
             <button
               type="button"
               class="btn btn-outline-secondary"
-              @click.stop="openModal(item.id)"
+              @click="openModal(item.id)"
               :disabled="loadingStatus.loadingItem === item.id"
             >
               <i
@@ -47,7 +47,7 @@
     </div>
   </div>
   <ProductModal
-    ref="modal"
+    ref="productModal"
     :temp-content="tempProduct"
     :add-cart="addCart"
     :id="productId"
@@ -60,7 +60,7 @@
   ></Pagination>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 import { RouterLink } from "vue-router";
 import ProductModal from "@/components/front/ProductModal.vue";
 import Pagination from "@/components/Pagination.vue";
@@ -91,7 +91,7 @@ export default {
       // 賦予讀取狀態id
       this.loadingStatus.loadingItem = content.id;
       this.$http
-        .post(`${VITE_APIURL}/api/${VITE_APIPATH}/cart`, {
+        .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`, {
           data: {
             product_id: content.id,
             qty,
@@ -115,7 +115,7 @@ export default {
     },
     getProducts(num = 1) {
       this.$http
-        .get(`${VITE_APIURL}/api/${VITE_APIPATH}/products?page=${num}`)
+        .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/products?page=${num}`)
         .then((res) => {
           console.log(res.data);
           this.products = res.data.products;
@@ -128,7 +128,7 @@ export default {
     getProductsCategory(params, page = 1) {
       this.$http
         .get(
-          `${VITE_APIURL}/api/${VITE_APIPATH}/products?category=${params}&page=${page}`
+          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/products?category=${params}&page=${page}`
         )
         .then((res) => {
           console.log(res.data);
@@ -142,7 +142,7 @@ export default {
   mounted() {
     this.getProducts();
 
-    this.$refs.modal.openModal();
+    // this.$refs.modal.show();
   },
 };
 </script>

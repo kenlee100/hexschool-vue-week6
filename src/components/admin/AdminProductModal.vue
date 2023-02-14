@@ -8,12 +8,7 @@
             <span v-if="isNew">新增產品</span>
             <span v-else>編輯產品</span>
           </h5>
-          <button
-            type="button"
-            class="btn-close"
-            data-bs-dismiss="modal"
-            aria-label="Close"
-          ></button>
+          <button type="button" class="btn-close" @click="closeModal"></button>
         </div>
         <div class="modal-body">
           <div class="row">
@@ -25,7 +20,7 @@
                     type="text"
                     class="form-control"
                     placeholder="請輸入主要圖片連結"
-                    v-model="tempContent.imageUrl"
+                    v-model="newTempContent.imageUrl"
                   />
                   <div class="input-group">
                     <input
@@ -37,13 +32,14 @@
                     />
                   </div>
                   <img
-                    v-if="tempContent.imageUrl"
+                    v-if="newTempContent.imageUrl"
                     class="img-fluid"
-                    :src="tempContent.imageUrl"
+                    :src="newTempContent.imageUrl"
                     alt=""
                   />
                   <img
                     v-else
+                    class="img-fluid"
                     src="https://placehold.co/640x480?text=No+Photo"
                     alt=""
                   />
@@ -57,13 +53,13 @@
                   新增其他圖片欄位
                 </button>
               </div>
-              <!-- 判斷 tempContent.imagesUrl 是一個陣列 -->
+              <!-- 判斷 newTempContent.imagesUrl 是一個陣列 -->
               <div
                 class="d-flex flex-column overflow-auto"
-                v-if="Array.isArray(tempContent.imagesUrl)"
+                v-if="Array.isArray(newTempContent.imagesUrl)"
               >
                 <template
-                  v-for="(item, index) in tempContent.imagesUrl"
+                  v-for="(item, index) in newTempContent.imagesUrl"
                   :key="item.id"
                 >
                   <div class="py-3 border-bottom">
@@ -73,7 +69,7 @@
                         type="text"
                         class="form-control"
                         :placeholder="'請輸入圖片' + item.num + '連結'"
-                        v-model="tempContent.imagesUrl[index].imageUrl"
+                        v-model="newTempContent.imagesUrl[index].imageUrl"
                       />
                       <input
                         type="file"
@@ -116,7 +112,7 @@
                   type="text"
                   class="form-control"
                   placeholder="請輸入標題"
-                  v-model="tempContent.title"
+                  v-model="newTempContent.title"
                 />
               </div>
               <div class="row">
@@ -127,7 +123,7 @@
                     type="text"
                     class="form-control"
                     placeholder="請輸入分類"
-                    v-model="tempContent.category"
+                    v-model="newTempContent.category"
                   />
                 </div>
                 <div class="mb-3 col-md-6">
@@ -137,7 +133,7 @@
                     type="text"
                     class="form-control"
                     placeholder="請輸入單位"
-                    v-model="tempContent.unit"
+                    v-model="newTempContent.unit"
                   />
                 </div>
               </div>
@@ -150,7 +146,7 @@
                     min="0"
                     class="form-control"
                     placeholder="請輸入原價"
-                    v-model.number="tempContent.origin_price"
+                    v-model.number="newTempContent.origin_price"
                   />
                 </div>
                 <div class="mb-3 col-md-6">
@@ -161,7 +157,7 @@
                     min="0"
                     class="form-control"
                     placeholder="請輸入售價"
-                    v-model.number="tempContent.price"
+                    v-model.number="newTempContent.price"
                   />
                 </div>
               </div>
@@ -173,7 +169,7 @@
                   type="text"
                   class="form-control"
                   placeholder="請輸入產品描述"
-                  v-model="tempContent.description"
+                  v-model="newTempContent.description"
                 >
                 </textarea>
               </div>
@@ -184,7 +180,7 @@
                   type="text"
                   class="form-control"
                   placeholder="請輸入說明內容"
-                  v-model="tempContent.content"
+                  v-model="newTempContent.content"
                 >
                 </textarea>
               </div>
@@ -196,7 +192,7 @@
                     type="checkbox"
                     :true-value="1"
                     :false-value="0"
-                    v-model="tempContent.is_enabled"
+                    v-model="newTempContent.is_enabled"
                   />
                   <label class="form-check-label" for="is_enabled"
                     >是否啟用</label
@@ -223,68 +219,76 @@
   </div>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   data() {
     return {
       modal: {},
+      newTempContent: {
+        imagesUrl: [],
+      },
     };
   },
   props: {
     tempContent: {
       type: Object,
-      default: {},
+      default() {},
     },
     // 接收外層isNew，判斷modal標題
     isNew: {
       type: Boolean,
       default: false,
     },
-    openModal: {
-      type: Function,
-      default() {},
+    // openModal: {
+    //   type: Function,
+    //   default() {},
+    // },
+  },
+  watch: {
+    tempContent() {
+      // console.log("chcek");
+      this.newTempContent = this.tempContent;
     },
   },
   methods: {
     // 觸發外層關閉modal事件
     closeModal() {
-      // this.$emit("close-modal", "#productModal");
       this.modal.hide();
+    },
+    openModal() {
+      this.modal.show();
     },
 
     // 建立圖片欄位
     createImage() {
       // 計算圖片數量
       let count = null;
-
       // 有 imagesUrl 時
-      if (this.tempContent.imagesUrl) {
-        // 將 tempContent.imagesUrl 圖片數量賦予到count
-        count = this.tempContent.imagesUrl.length;
+      if (this.newTempContent.imagesUrl) {
+        // 將 newTempContent.imagesUrl 圖片數量賦予到count
+        count = this.newTempContent.imagesUrl.length;
       }
-
       const imageObj = {
         // timestamp,  計算目前數量
         id: new Date().getTime(),
         num: (count += 1),
       };
-
       // 有 imagesUrl 時
-      if (this.tempContent.imagesUrl) {
+      if (this.newTempContent.imagesUrl) {
         // 新增一筆物件
-        this.tempContent.imagesUrl.push(imageObj);
+        this.newTempContent.imagesUrl.push(imageObj);
       } else {
         // 沒有 imagesUrl 時 新增 imagesUrl 陣列 + 新增一筆物件
-        this.tempContent.imagesUrl = [];
-        this.tempContent.imagesUrl.push(imageObj);
+        this.newTempContent.imagesUrl = [];
+        this.newTempContent.imagesUrl.push(imageObj);
       }
     },
     // 移除圖片
     deleteImage(data) {
-      this.tempContent.imagesUrl.forEach((item, index) => {
+      this.newTempContent.imagesUrl.forEach((item, index) => {
         if (item.id === data.id) {
-          this.tempContent.imagesUrl.splice(index, 1);
+          this.newTempContent.imagesUrl.splice(index, 1);
         }
       });
     },
@@ -295,9 +299,12 @@ export default {
         const refFiles = this.$refs[refItem];
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
-          .post(`${VITE_APIURL}/api/${VITE_APIPATH}/admin/upload/`, formData)
+          .post(
+            `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/upload/`,
+            formData
+          )
           .then((res) => {
-            this.tempContent.imageUrl = res.data.imageUrl;
+            this.newTempContent.imageUrl = res.data.imageUrl;
           })
           .catch((err) => {
             alert(err.data.message);
@@ -308,26 +315,29 @@ export default {
         const i = parseInt(refFiles.dataset.num);
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
-          .post(`${VITE_APIURL}/api/${VITE_APIPATH}/admin/upload/`, formData)
+          .post(
+            `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/upload/`,
+            formData
+          )
           .then((res) => {
-            this.tempContent.imagesUrl[i].imageUrl = res.data.imageUrl;
+            this.newTempContent.imagesUrl[i].imageUrl = res.data.imageUrl;
           })
           .catch((err) => {
             alert(err.data.message);
           });
       }
     },
-    updateProduct() {
-      let url = `${VITE_APIURL}/api/${VITE_APIPATH}/admin/product`;
-      console.log("url", url);
+    async updateProduct() {
+      let url = `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/product`;
+      // console.log("url", url, this.newTempContent.id);
       let method = "post";
-      // 判斷 isNew 是否為 新增
+      // // // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE_APIURL}/api/${VITE_APIPATH}/admin/product/${this.tempContent.id}`;
+        url = `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/product/${this.newTempContent.id}`;
         method = "put";
       }
       this.$http[method](url, {
-        data: this.tempContent,
+        data: this.newTempContent,
       })
         .then((res) => {
           // 外層傳入 取得所有商品
@@ -336,11 +346,18 @@ export default {
           alert(res.data.message);
         })
         .catch((err) => {
-          alert(err.data.message);
+          // axios版本不同，err 回傳的資料層級也不同
+          alert(err.response.data.message);
         });
     },
   },
   mounted() {
+    this.$refs.modal.addEventListener("hidden.bs.modal", () => {
+      // 關閉modal時將內部暫存資料清空
+      this.newTempContent = {
+        imagesUrl: [],
+      };
+    });
     this.modal = new bootstrap.Modal(this.$refs.modal, {
       backdrop: "static",
       keyboard: false,

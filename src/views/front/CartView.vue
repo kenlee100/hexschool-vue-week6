@@ -190,7 +190,7 @@
   </div>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
 export default {
   data() {
     return {
@@ -222,7 +222,7 @@ export default {
     // 取得全部商品
     // getProducts() {
     //   this.$http
-    //     .get(`${VITE_APIURL}/api/${VITE_APIPATH}/products`)
+    //     .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/products`)
     //     .then((res) => {
     //       this.products = res.data.products;
     //       this.isLoading = false;
@@ -242,7 +242,7 @@ export default {
     //   // 賦予讀取狀態id
     //   this.loadingStatus.loadingItem = content.id;
     //   this.$http
-    //     .post(`${VITE_APIURL}/api/${VITE_APIPATH}/cart`, {
+    //     .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`, {
     //       data: {
     //         product_id: content.id,
     //         qty,
@@ -268,7 +268,7 @@ export default {
     // 取得購物車
     getCartList() {
       this.$http
-        .get(`${VITE_APIURL}/api/${VITE_APIPATH}/cart`)
+        .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`)
         .then((res) => {
           this.cart = res.data.data;
         })
@@ -282,7 +282,7 @@ export default {
       this.loadingStatus.loadingItem = content.id;
       try {
         const res = await this.$http.delete(
-          `${VITE_APIURL}/api/${VITE_APIPATH}/cart/${content.id}`
+          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart/${content.id}`
         );
         // 將讀取狀態清空
         this.loadingStatus.loadingItem = "";
@@ -303,7 +303,7 @@ export default {
       if (dialog) {
         try {
           const res = await this.$http.delete(
-            `${VITE_APIURL}/api/${VITE_APIPATH}/carts`
+            `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/carts`
           );
           await this.getCartList();
           const { message } = res.data;
@@ -321,7 +321,7 @@ export default {
       this.loadingStatus.loadingItem = content.id;
       try {
         const res = await this.$http.put(
-          `${VITE_APIURL}/api/${VITE_APIPATH}/cart/${content.id}`,
+          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart/${content.id}`,
           {
             data: {
               product_id: content.product_id,
@@ -350,7 +350,7 @@ export default {
       const order = this.form;
 
       this.$http
-        .post(`${VITE_APIURL}/api/${VITE_APIPATH}/order`, {
+        .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/order`, {
           data: order,
         })
         .then((res) => {
