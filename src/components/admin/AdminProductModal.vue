@@ -219,7 +219,7 @@
   </div>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   data() {
@@ -240,14 +240,9 @@ export default {
       type: Boolean,
       default: false,
     },
-    // openModal: {
-    //   type: Function,
-    //   default() {},
-    // },
   },
   watch: {
     tempContent() {
-      // console.log("chcek");
       this.newTempContent = this.tempContent;
     },
   },
@@ -300,14 +295,14 @@ export default {
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
           .post(
-            `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/upload/`,
+            `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/upload/`,
             formData
           )
           .then((res) => {
             this.newTempContent.imageUrl = res.data.imageUrl;
           })
           .catch((err) => {
-            alert(err.data.message);
+            alert(err.response.data.message);
           });
       } else {
         // 上傳其他圖片
@@ -316,24 +311,23 @@ export default {
         formData.append(refFiles.name, refFiles.files[0]);
         this.$http
           .post(
-            `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/upload/`,
+            `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/upload/`,
             formData
           )
           .then((res) => {
             this.newTempContent.imagesUrl[i].imageUrl = res.data.imageUrl;
           })
           .catch((err) => {
-            alert(err.data.message);
+            alert(err.response.data.message);
           });
       }
     },
     async updateProduct() {
-      let url = `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/product`;
-      // console.log("url", url, this.newTempContent.id);
+      let url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product`;
       let method = "post";
       // // // 判斷 isNew 是否為 新增
       if (!this.isNew) {
-        url = `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/product/${this.newTempContent.id}`;
+        url = `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product/${this.newTempContent.id}`;
         method = "put";
       }
       this.$http[method](url, {

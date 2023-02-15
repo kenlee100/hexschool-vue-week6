@@ -1,5 +1,5 @@
 <template>
-  <Nav></Nav>
+  <Navbar></Navbar>
   <div class="container">
     <div class="py-4">
       <router-view></router-view>
@@ -8,10 +8,9 @@
 </template>
 <script>
 import { RouterView } from "vue-router";
-import Nav from "../components/admin/Nav.vue";
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+import Navbar from "../components/admin/Nav.vue";
 export default {
   methods: {},
-  components: { RouterView, Nav },
+  components: { RouterView, Navbar },
 };
 </script>

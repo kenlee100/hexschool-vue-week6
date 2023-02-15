@@ -64,15 +64,17 @@
     @change-page="getProducts"
     :get-products="getProducts"
   ></Pagination>
+  <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import AdminProductModal from "@/components/admin/AdminProductModal.vue";
 import AdminDeleteModal from "@/components/admin/AdminDeleteModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
     return {
+      isLoading: false,
       // 初始商品資料
       products: [],
       temp: {
@@ -81,7 +83,6 @@ export default {
       pagination: {},
       isNew: false,
       productId: "",
-      // isLoading: false,
     };
   },
   components: {
@@ -92,21 +93,18 @@ export default {
   methods: {
     // 取得目前頁碼商品資料
     getProducts(num = 1) {
-      // this.isLoading = true;
       this.$http
         .get(
-          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/products/?page=${num}`
-        )
+          `${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/products/?page=${num}`)
         .then((res) => {
-          // console.log("res", res);
           this.products = res.data.products;
           this.pagination = res.data.pagination;
-          // this.isLoading = false;
+          this.isLoading = false;
         })
         .catch((err) => {
-          // this.isLoading = false;
           // 顯示失敗資訊
-          alert(err.data.message);
+          alert(`${err.response.data.message}`);
+          this.isLoading = false;
         });
     },
     openModal(openMethod, item) {
@@ -125,17 +123,10 @@ export default {
         this.$refs.deleteProductModal.openModal();
       }
     },
-    // closeModal(target) {
-    //   if (target === "#productModal") {
-    //     // productModalContainer.hide();
-    //   } else if (target === "#delProductModal") {
-    //     // delProductModalContainer.hide();
-    //   }
-    // },
   },
   mounted() {
+    this.isLoading = true;
     this.getProducts();
-    // console.log(this.$refs.productModal);
   },
 };
 </script>

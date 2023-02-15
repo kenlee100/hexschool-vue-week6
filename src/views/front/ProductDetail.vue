@@ -42,14 +42,15 @@
         </div>
       </div>
     </div>
-    <!-- col-sm-6 end -->
   </div>
+  <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 export default {
   data() {
     return {
+      isLoading: false,
       productItem: {},
       qty: 1,
     };
@@ -57,30 +58,25 @@ export default {
   methods: {
     getProductItem(id) {
       this.$http
-        .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/product/${id}`)
+        .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/product/${id}`)
         .then((res) => {
-          console.log(res.data);
-
           this.productItem = res.data.product;
+          this.isLoading = false;
         })
         .catch((err) => {
-          console.log(err);
+          alert(`${err.response.data.message}`);
+          this.isLoading = false;
         });
     },
     addCart(content, qty = 1) {
-      console.log(content, qty);
-      // 賦予讀取狀態id
-      // this.loadingStatus.loadingItem = content.id;
       this.$http
-        .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`, {
+        .post(`${VITE_APP_URL}/api/${VITE_APP_PATH}/cart`, {
           data: {
             product_id: content.id,
             qty,
           },
         })
         .then((res) => {
-          // 將讀取狀態清空
-          // this.loadingStatus.loadingItem = "";
           //解構賦值
           const {
             message,
@@ -88,17 +84,14 @@ export default {
             data: { product },
           } = res.data;
           alert(`${product.title} ${message}`);
-          // this.$refs.modal.closeModal();
-          // this.getCartList();
         })
         .catch((err) => {
-          alert(`${err.data.message}`);
+          alert(`${err.response.data.message}`);
         });
     },
   },
   mounted() {
-    console.log(this.$route.query);
-    console.log(this.$route.params);
+    this.isLoading = true;
     this.getProductItem(this.$route.params.id);
   },
 };

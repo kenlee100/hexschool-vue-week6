@@ -7,11 +7,7 @@
           <img :src="item.imageUrl" class="card-img-top" :alt="item.title" />
         </router-link>
         <div class="card-body">
-          <span
-            class="badge rounded-pill bg-primary"
-            @click="getProductsCategory(item.category)"
-            >{{ item.category }}</span
-          >
+          <span class="badge rounded-pill bg-primary">{{ item.category }}</span>
           <h5 class="card-title">{{ item.title }}</h5>
           <p class="card-text">
             {{ item.description }}
@@ -58,15 +54,17 @@
     @change-page="getProducts"
     :get-products="getProducts"
   ></Pagination>
+  <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import { RouterLink } from "vue-router";
 import ProductModal from "@/components/front/ProductModal.vue";
 import Pagination from "@/components/Pagination.vue";
 export default {
   data() {
     return {
+      isLoading: false,
       loadingStatus: {
         loadingItem: "",
       },
@@ -91,7 +89,7 @@ export default {
       // 賦予讀取狀態id
       this.loadingStatus.loadingItem = content.id;
       this.$http
-        .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`, {
+        .post(`${VITE_APP_URL}/api/${VITE_APP_PATH}/cart`, {
           data: {
             product_id: content.id,
             qty,
@@ -107,42 +105,28 @@ export default {
             data: { product },
           } = res.data;
           alert(`${product.title} ${message}`);
-          this.$refs.modal.closeModal();
+          this.$refs.productModal.closeModal()
         })
         .catch((err) => {
-          alert(`${err.data.message}`);
+          alert(`${err.response.data.message}`);
         });
     },
     getProducts(num = 1) {
       this.$http
-        .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/products?page=${num}`)
+        .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/products?page=${num}`)
         .then((res) => {
-          console.log(res.data);
           this.products = res.data.products;
           this.pagination = res.data.pagination;
+          this.isLoading = false;
         })
         .catch((err) => {
-          console.log(err);
-        });
-    },
-    getProductsCategory(params, page = 1) {
-      this.$http
-        .get(
-          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/products?category=${params}&page=${page}`
-        )
-        .then((res) => {
-          console.log(res.data);
-          // this.products = res.data.products;
-        })
-        .catch((err) => {
-          console.log(err);
+          alert(`${err.response.data.message}`);
         });
     },
   },
   mounted() {
+    this.isLoading = true;
     this.getProducts();
-
-    // this.$refs.modal.show();
   },
 };
 </script>

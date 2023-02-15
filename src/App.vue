@@ -1,5 +1,5 @@
 <template>
-  <VueLoading v-model:active="isLoading"></VueLoading>
+  
   <RouterView />
 </template>
 <script>
@@ -21,9 +21,6 @@ export default {
   },
   mounted() {
     this.isLoading = true;
-    setTimeout(() => {
-      this.isLoading = false;
-    }, 1000);
   },
 };
 </script>

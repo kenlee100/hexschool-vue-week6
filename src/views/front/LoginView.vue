@@ -1,6 +1,6 @@
 <template>
-  <h1>JAPAN TRIP admin</h1>
   <div class="container">
+    <h1>admin</h1>
     <div class="row justify-content-center">
       <h1 class="h3 mb-3 font-weight-normal">請先登入</h1>
       <div class="col-8">
@@ -41,7 +41,7 @@
   </div>
 </template>
 <script>
-const { VITE_APP_APIURL } = import.meta.env;
+const { VITE_APP_URL } = import.meta.env;
 export default {
   data() {
     return {
@@ -54,11 +54,11 @@ export default {
   methods: {
     login() {
       this.$http
-        .post(`${VITE_APP_APIURL}/admin/signin`, this.loginData)
+        .post(`${VITE_APP_URL}/admin/signin`, this.loginData)
         .then((res) => {
           const { token, expired } = res.data;
           document.cookie = `userToken=${token}; expires=${new Date(expired)};`;
-          this.$router.push("/admin/productlist");
+          this.$router.push("/admin");
         })
         .catch((err) => {
           alert(err.data.message);

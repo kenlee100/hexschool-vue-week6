@@ -34,21 +34,19 @@
   </div>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   props: {
     tempContent: {
       type: Object,
-      default: {},
+      default() {},
     },
   },
   methods: {
     deleteItem(id) {
       this.$http
-        .delete(
-          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/admin/product/${id}`
-        )
+        .delete(`${VITE_APP_URL}/api/${VITE_APP_PATH}/admin/product/${id}`)
         .then((res) => {
           // 外層傳入 取得所有商品
           this.$emit("update-data");
@@ -57,7 +55,7 @@ export default {
         })
         .catch((err) => {
           // 顯示失敗資訊
-          alert(err.data.message);
+          alert(`${err.response.data.message}`);
         });
     },
     closeModal() {

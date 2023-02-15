@@ -16,7 +16,7 @@
   </nav>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL } = import.meta.env;
 export default {
   data() {
     return {
@@ -47,14 +47,12 @@ export default {
       if (token) {
         this.$http.defaults.headers.common.Authorization = token;
         this.$http
-          .post(`${VITE_APP_APIURL}/api/user/check`)
-          .then(() => {
-            // console.log("check", res);
-          })
+          .post(`${VITE_APP_URL}/api/user/check`)
+          .then(() => {})
           .catch((err) => {
             console.log(err);
             // 顯示失敗資訊
-            alert(err.data.message);
+            alert(`${err.response.data.message}`);
             // 驗證失敗轉到登入
             this.$router.push("/login");
           });
@@ -65,14 +63,14 @@ export default {
     },
     logout() {
       this.$http
-        .post(`${VITE_APP_APIURL}/logout/`)
+        .post(`${VITE_APP_URL}/logout/`)
         .then((res) => {
           alert(res.data.message);
           document.cookie = "userToken=;expires=;";
           this.$router.push("/login");
         })
         .catch((err) => {
-          alert(err.data.message);
+          alert(`${err.response.data.message}`);
         });
     },
   },

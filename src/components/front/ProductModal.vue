@@ -64,7 +64,7 @@
   </div>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 import * as bootstrap from "bootstrap";
 export default {
   data() {
@@ -104,13 +104,13 @@ export default {
       // 取得單筆商品資訊;
       if (this.id) {
         this.$http
-          .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/product/${this.id}`)
+          .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/product/${this.id}`)
           .then((res) => {
             this.tempContent = res.data.product;
             this.modal.show();
           })
           .catch((err) => {
-            alert(`${err.data.message}`);
+            alert(`${err.response.data.message}`);
           });
       }
     },

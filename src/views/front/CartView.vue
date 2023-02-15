@@ -188,9 +188,10 @@
       </Form>
     </div>
   </div>
+  <VueLoading v-model:active="isLoading"></VueLoading>
 </template>
 <script>
-const { VITE_APP_APIURL, VITE_APP_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
 export default {
   data() {
     return {
@@ -219,61 +220,17 @@ export default {
   },
 
   methods: {
-    // 取得全部商品
-    // getProducts() {
-    //   this.$http
-    //     .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/products`)
-    //     .then((res) => {
-    //       this.products = res.data.products;
-    //       this.isLoading = false;
-    //     })
-    //     .catch((err) => {
-    //       alert(`${err.data.message}`);
-    //     });
-    // },
-    // openModal(id) {
-    //   // id為外層帶入 productId
-    //   // 將 id 帶入 讀取狀態
-    //   this.loadingStatus.loadingItem = id;
-    //   this.productId = id;
-    // },
-    // 加入購物車
-    // addCart(content, qty = 1) {
-    //   // 賦予讀取狀態id
-    //   this.loadingStatus.loadingItem = content.id;
-    //   this.$http
-    //     .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`, {
-    //       data: {
-    //         product_id: content.id,
-    //         qty,
-    //       },
-    //     })
-    //     .then((res) => {
-    //       // 將讀取狀態清空
-    //       this.loadingStatus.loadingItem = "";
-    //       //解構賦值
-    //       const {
-    //         message,
-    //         // 取出內層的資料
-    //         data: { product },
-    //       } = res.data;
-    //       alert(`${product.title} ${message}`);
-    //       this.$refs.modal.closeModal();
-    //       this.getCartList();
-    //     })
-    //     .catch((err) => {
-    //       alert(`${err.data.message}`);
-    //     });
-    // },
     // 取得購物車
     getCartList() {
       this.$http
-        .get(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart`)
+        .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/cart`)
         .then((res) => {
           this.cart = res.data.data;
+          this.isLoading = false;
         })
         .catch((err) => {
-          alert(`${err.data.message}`);
+          alert(`${err.response.data.message}`);
+          this.isLoading = false;
         });
     },
     // 刪除單筆購物車
@@ -282,7 +239,7 @@ export default {
       this.loadingStatus.loadingItem = content.id;
       try {
         const res = await this.$http.delete(
-          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart/${content.id}`
+          `${VITE_APP_URL}/api/${VITE_APP_PATH}/cart/${content.id}`
         );
         // 將讀取狀態清空
         this.loadingStatus.loadingItem = "";
@@ -294,7 +251,7 @@ export default {
         const { message } = res.data;
         alert(`${title} ${message}`);
       } catch (err) {
-        alert(`${err.data.message}`);
+        alert(`${err.response.data.message}`);
       }
     },
     // 清除購物車
@@ -303,7 +260,7 @@ export default {
       if (dialog) {
         try {
           const res = await this.$http.delete(
-            `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/carts`
+            `${VITE_APP_URL}/api/${VITE_APP_PATH}/carts`
           );
           await this.getCartList();
           const { message } = res.data;
@@ -311,7 +268,7 @@ export default {
             alert(`${message} 購物車`);
           }, 500);
         } catch (err) {
-          alert(`${err.data.message}`);
+          alert(`${err.response.data.message}`);
         }
       }
     },
@@ -320,8 +277,8 @@ export default {
       // 賦予讀取狀態id
       this.loadingStatus.loadingItem = content.id;
       try {
-        const res = await this.$http.put(
-          `${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/cart/${content.id}`,
+        await this.$http.put(
+          `${VITE_APP_URL}/api/${VITE_APP_PATH}/cart/${content.id}`,
           {
             data: {
               product_id: content.product_id,
@@ -337,8 +294,8 @@ export default {
           product: { title },
         } = content;
         alert(`已更新 品名：${title} 數量`);
-      } catch (error) {
-        alert(`${err.data.message}`);
+      } catch (err) {
+        alert(`${err.response.data.message}`);
       }
     },
     isPhone(value) {
@@ -346,39 +303,28 @@ export default {
       return phoneNumber.test(value) ? true : "請填入正確的手機號碼";
     },
     // 建立訂單
-    createOrder() {
+    async createOrder() {
       const order = this.form;
-
-      this.$http
-        .post(`${VITE_APP_APIURL}/api/${VITE_APP_APIPATH}/order`, {
-          data: order,
-        })
-        .then((res) => {
-          //解構賦值
-          const { message, orderId } = res.data;
-          alert(` ${message} ，訂單編號 ${orderId}`);
-          // VeeValidate 的方法
-          this.$refs.form.resetForm();
-          (this.form = {
-            user: {
-              name: "",
-              email: "",
-              tel: "",
-              address: "",
-              city: "",
-            },
-            message: "",
-          }),
-            this.getCartList();
-        })
-        .catch((err) => {
-          alert(`${err.data.message}`);
-        });
+      try {
+        const res = await this.$http.post(
+          `${VITE_APP_URL}/api/${VITE_APP_PATH}/order`,
+          {
+            data: order,
+          }
+        );
+        //解構賦值
+        const { message, orderId } = res.data;
+        alert(` ${message} ，訂單編號 ${orderId}`);
+        this.$refs.form.resetForm();
+        // TODO: 清空後還是會留下textarea內容
+        await this.getCartList();
+      } catch (err) {
+        alert(`${err.response.data.message}`);
+      }
     },
   },
   mounted() {
     this.isLoading = true;
-    // this.getProducts();
     this.getCartList();
   },
 };
