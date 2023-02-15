@@ -1,17 +1,13 @@
 <template>
-  <Nav></Nav>
+  <Navbar></Navbar>
   <div class="container">
     <router-view></router-view>
   </div>
 </template>
 <script>
 import { RouterView } from "vue-router";
-import Nav from "../components/front/Nav.vue";
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+import Navbar from "../components/front/Nav.vue";
 export default {
-  components: { RouterView, Nav },
-  mounted() {
-    console.log(VITE_APIURL, VITE_APIPATH);
-  },
+  components: { RouterView, Navbar }
 };
 </script>

@@ -1,12 +1,5 @@
 <template>
-  <div
-    class="modal fade"
-    tabindex="-1"
-    role="dialog"
-    aria-labelledby="exampleModalLabel"
-    aria-hidden="true"
-    ref="modal"
-  >
+  <div class="modal fade" ref="modal">
     <div class="modal-dialog modal-xl" role="document">
       <div class="modal-content border-0">
         <div class="modal-header bg-dark text-white">
@@ -71,7 +64,8 @@
   </div>
 </template>
 <script>
-const { VITE_APIURL, VITE_APIPATH } = import.meta.env;
+const { VITE_APP_URL, VITE_APP_PATH } = import.meta.env;
+import * as bootstrap from "bootstrap";
 export default {
   data() {
     return {
@@ -110,13 +104,13 @@ export default {
       // 取得單筆商品資訊;
       if (this.id) {
         this.$http
-          .get(`${VITE_APIURL}/api/${VITE_APIPATH}/product/${this.id}`)
+          .get(`${VITE_APP_URL}/api/${VITE_APP_PATH}/product/${this.id}`)
           .then((res) => {
             this.tempContent = res.data.product;
             this.modal.show();
           })
           .catch((err) => {
-            alert(`${err.data.message}`);
+            alert(`${err.response.data.message}`);
           });
       }
     },

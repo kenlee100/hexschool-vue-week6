@@ -57,6 +57,11 @@ const router = createRouter({
       // 巢狀路由
       children: [
         {
+          path: "",
+          name: "adminhome",
+          component: () => import("../views/admin/AdminHomeView.vue"),
+        },
+        {
           path: "productlist",
           name: "productlist",
           component: () => import("../views/admin/AdminProductListView.vue"),
