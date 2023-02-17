@@ -24,17 +24,17 @@ const router = createRouter({
           component: () => import("../views/front/ProductDetail.vue"),
         },
         {
-          path: "/blogs",
+          path: "blogs",
           name: "blog",
           component: () => import("../views/front/BLogView.vue"),
         },
         {
-          path: "/about",
+          path: "about",
           name: "about",
           component: () => import("../views/front/AboutView.vue"),
         },
         {
-          path: "/faq",
+          path: "faq",
           name: "faq",
           component: () => import("../views/front/FaqView.vue"),
         },
