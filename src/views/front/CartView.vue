@@ -315,8 +315,8 @@ export default {
         //解構賦值
         const { message, orderId } = res.data;
         alert(` ${message} ，訂單編號 ${orderId}`);
-        this.$refs.form.resetForm();
-        // TODO: 清空後還是會留下textarea內容
+        this.$refs.form.resetForm(); //VeeValidate 重設表單 resetForm方法
+        this.form.message = "" // 清除textarea欄位
         await this.getCartList();
       } catch (err) {
         alert(`${err.response.data.message}`);
